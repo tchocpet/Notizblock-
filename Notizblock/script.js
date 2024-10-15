@@ -1,16 +1,31 @@
-let notesTitles = [`Ba`, `Aufgabe`, `lernen`];
-let notes = [`Banana`, `Chimie`, `Mathe`];
+let allNotes = {
+  notesTitles: [`Ba`, `Aufgabe`, `lernen`],
+  notes: [`Banana`, `Chimie`, `Mathe`],
+  archivNotesTitles: [],
+  archivNotes: [],
+  trashNotesTitles: [],
+  trashNotes: [],
+};
 
-let trashNotesTitles = [];
-let trashNotes = [];
+function moveNote(indexNote, startKey, destinationKey) {
+  let note = allNotes[startKey].splice(indexNote, 1);
+  allNotes[destinationKey].push(note[0]);
+  let notesTitle = allNotes[startKey + "Titles"].splice(indexNote, 1);
+  allNotes[destinationKey + "Titles"].push(notesTitle[0]);
 
-let archivNotesTitles = [];
-let archivNotes = [];
+  renderAllNotes();
+}
+
+function renderAllNotes() {
+  renderNotes();
+  renderTrashNotes();
+  renderArchivNotes();
+}
 
 function renderNotes() {
   let contentRef = document.getElementById(`content`);
   contentRef.innerHTML = "";
-  for (let indexNote = 0; indexNote < notes.length; indexNote++) {
+  for (let indexNote = 0; indexNote < allNotes.notes.length; indexNote++) {
     contentRef.innerHTML += getNoteTeamplate(indexNote);
   }
 }
@@ -20,7 +35,7 @@ function renderArchivNotes() {
   archivContentRef.innerHTML = "";
   for (
     let indexArchivNote = 0;
-    indexArchivNote < archivNotes.length;
+    indexArchivNote < allNotes.archivNotes.length;
     indexArchivNote++
   ) {
     archivContentRef.innerHTML += getArchivNoteTeamplate(indexArchivNote);
@@ -32,7 +47,7 @@ function renderTrashNotes() {
   trashContentRef.innerHTML = "";
   for (
     let indexTrashNote = 0;
-    indexTrashNote < trashNotes.length;
+    indexTrashNote < allNotes.trashNotes.length;
     indexTrashNote++
   ) {
     trashContentRef.innerHTML += gettrashNoteTeamplate(indexTrashNote);
@@ -53,39 +68,17 @@ function addNote() {
   notes.push(noteInput);
   notesTitles.push(noteTitle); // Nutze den Titel aus dem Eingabefeld, nicht "Neuer Titel"
 
-  renderNotes();
+  renderAllNotes();
 
   noteInputRef.value = ""; // Eingabefeld leeren
   noteInputTitleRef.value = ""; // Titelfeld leeren
 }
 
-function notetoTrash(indexNote) {
-  let trashNote = notes.splice(indexNote, 1);
-  trashNotes.push(trashNote[0]);
+function deleteNote(indexTrashNote) {
+  allNotes.trashNotes.splice(indexTrashNote, 1);
+  allNotes.trashNotesTitles.splice(indexTrashNote, 1); // Titel endgültig aus dem Papierkorb löschen
 
-  let trashNoteTitle = notesTitles.splice(indexNote, 1);
-  trashNotesTitles.push(trashNoteTitle[0]);
-
-  renderNotes();
-  renderTrashNotes();
+  renderAllNotes();
 }
 
-function trashToNote(indexTrashNote) {
-  // Entferne die Notiz aus dem Papierkorb und füge sie wieder in die Hauptliste ein
-  let note = trashNotes.splice(indexTrashNote, 1); // Hole die Notiz aus dem Papierkorb
-  notes.push(note[0]); // Füge die Notiz wieder zu den Hauptnotizen hinzu
-
-  let noteTitle = trashNotesTitles.splice(indexTrashNote, 1); // Hole den Titel aus dem Papierkorb
-  notesTitles.push(noteTitle[0]); // Füge den Titel wieder zu den Haupttiteln hinzu
-
-  renderNotes();
-  renderTrashNotes();
-}
-
-function deleteTrashNote(indexTrashNote) {
-  trashNotes.splice(indexTrashNote, 1); // Notiz endgültig aus dem Papierkorb löschen
-  trashNotesTitles.splice(indexTrashNote, 1); // Titel endgültig aus dem Papierkorb löschen
-  renderTrashNotes();
-}
-
-// Dialo section Später Hinzufügen
+// Dialog section Später Hinzufügen
